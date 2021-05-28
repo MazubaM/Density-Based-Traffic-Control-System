@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from operator import itemgetter
-from trafficlight import *
+
 
 def ImgProcess(images):
     # Load Yolo
@@ -48,9 +48,9 @@ def ImgProcess(images):
                 class_ids.append(class_id)
 
     indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-    num4 = 0
-    num41 = 0
-    num42 = 0
+    CarCount = 0
+    TruckCount = 0
+    MotorbikeCount = 0
     CarTotal = 0
 
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -62,14 +62,12 @@ def ImgProcess(images):
             cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
             cv2.putText(img, label, (x, y + 30), font, 0.5, color, 0)
             
+            #Vehicle Count
+            CarCount += label.count('car')
+            TruckCount += label.count('truck')
+            MotorbikeCount += label.count('motorbike')
 
-            # global num4
-        
-            num4 += label.count('car')
-            num41 += label.count('truck')
-            num42 += label.count('motorbike')
-
-            CarTotal = num4 + num41 + num42
+            CarTotal = CarCount + TruckCount + MotorbikeCount
 
     cv2.imshow("Image", img)
     cv2.waitKey(0)
@@ -77,42 +75,65 @@ def ImgProcess(images):
 
     return CarTotal
 
+# lane1 = 0
+# lane2 = 0
+# lane3 = 0
+# lane4 = 0
+# total = 0
+def ProcessImg():
+    #Process Traffic from 4 Lanes
+    lane1 = ImgProcess("traff5.jpg")
+    lane2 = ImgProcess("traff4.jpg")
+    lane3 = ImgProcess("traff6.jpg")
+    lane4 = ImgProcess("em.jpeg")
+    # total = lane1 + lane2 + lane3 + lane4
 
-lane1 = ImgProcess("traff5.jpg")
-lane2 = ImgProcess("traff4.jpg")
-lane3 = ImgProcess("traff6.jpg")
-lane4 = ImgProcess("em.jpeg")
+    return [lane1, lane2, lane3, lane4]
+#ProcessImg()
 
-total = lane1 + lane2 + lane3 + lane4
 
-def time():
-      global total, total_time, lane1_time, lane2_time, lane3_time, lane4_time 
-      
-      lane1_time = (lane1/total) * 60
-      lane2_time = (lane2/total) * 60
-      lane3_time = (lane3/total) * 60
-      lane4_time = (lane4/total) * 60
+# lane1_time = 0
+# lane2_time = 0
+# lane3_time = 0
+# lane4_time = 0
+# total_time = 0
 
-      total_time = round(lane1_time) + round(lane2_time) + round(lane3_time) + round(lane4_time)
 
-time()
+def time(lanes, delay):
+    # global total_time, lane1_time, lane2_time, lane3_time, lane4_time
+    
+    total = sum(lanes)
 
-def queue():
+    lane1_time = (lanes[0]/total) * delay
+    lane2_time = (lanes[1]/total) * delay
+    lane3_time = (lanes[2]/total) * delay
+    lane4_time = (lanes[3]/total) * delay
 
-      list = [{'Lane': 1, 'No_of_Cars': lane1, 'Time' : round(lane1_time)},
-              {'Lane': 2, 'No_of_Cars': lane2, 'Time' : round(lane2_time)},
-              {'Lane': 3, 'No_of_Cars': lane3, 'Time' : round(lane3_time)},
-              {'Lane': 4, 'No_of_Cars': lane4, 'Time' : round(lane4_time)}]
+    return [round(lane1_time), round(lane2_time), round(lane3_time), round(lane4_time)]
 
-      sorted_list = sorted(list, key=itemgetter('No_of_Cars'))
+def queue(lanes, times, variance):
 
-      for lane in sorted_list:
+    total_time = sum(times)
+    total = sum(lanes)
+
+    list = [{'Lane': 1, 'TotalVehicles': lanes[0], 'Time' : round(times[0])},
+              {'Lane': 2, 'TotalVehicles': lanes[1], 'Time' : round(times[1])},
+              {'Lane': 3, 'TotalVehicles': lanes[2], 'Time' : round(times[2])},
+              {'Lane': 4, 'TotalVehicles': lanes[3], 'Time' : round(times[3])}]
+
+
+    sorted_list = sorted(list, key=itemgetter('TotalVehicles'), reverse=variance)
+
+    for lane in sorted_list:
         print(lane, "\n")
 
       
-      print("Total Number of Cars is: ", total)
-      print("Complete Cycle time is: ", round(total_time))
+    print("Total Number of Vehicles is: ", total)
+    print("Complete Cycle time is: ", round(total_time))
 
-queue()
+    return sorted_list
 
-timecalc() 
+def execute(delay, variance):
+    lanes = ProcessImg()
+    times = time(lanes, delay)
+    return queue(lanes, times, variance)
