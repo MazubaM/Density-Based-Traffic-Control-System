@@ -18,7 +18,7 @@ def ImgProcess(images):
     img = cv2.resize(img, None, fx=0.4, fy=0.4)
     height, width, channels = img.shape
 
-    # Detecting objects
+    # Object Detection
     blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
     net.setInput(blob)
     outs = net.forward(output_layers)
@@ -75,32 +75,17 @@ def ImgProcess(images):
 
     return CarTotal
 
-# lane1 = 0
-# lane2 = 0
-# lane3 = 0
-# lane4 = 0
-# total = 0
 def ProcessImg():
-    #Process Traffic from 4 Lanes
+    #Process Traffic from 4 Lanes via 4 different images
     lane1 = ImgProcess("traff5.jpg")
     lane2 = ImgProcess("traff4.jpg")
     lane3 = ImgProcess("traff6.jpg")
     lane4 = ImgProcess("em.jpeg")
-    # total = lane1 + lane2 + lane3 + lane4
+   
 
     return [lane1, lane2, lane3, lane4]
-#ProcessImg()
-
-
-# lane1_time = 0
-# lane2_time = 0
-# lane3_time = 0
-# lane4_time = 0
-# total_time = 0
-
 
 def time(lanes, delay):
-    # global total_time, lane1_time, lane2_time, lane3_time, lane4_time
     
     total = sum(lanes)
 
