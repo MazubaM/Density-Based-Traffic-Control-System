@@ -5,8 +5,8 @@ The system is designed in python and it uses image processing via yolov3 to iden
 Yolov3 was trained on the MSCOCO Dataset.
 
 The system first detects cars in an image and counts them. After which,the time to be alloted to a particular lane is calculated based on the number of cars present.
-**
-Mini Instrictions**
+
+**Mini Instrictions**
 
 1. Download and Install Python
 
