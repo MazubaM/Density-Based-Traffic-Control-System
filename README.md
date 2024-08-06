@@ -23,4 +23,4 @@ The system first detects cars in an image and counts them. After which,the time 
 7. Execute UI.py and Enjoy!!!!!
  
 Credits to [insert crisis here] as well as WeziMk for their help during the development of this project..
-For any queries dont hesitate to contact me via email @ mazubaa.malambo@gmail.com :)
+For any queries dont hesitate to contact me via email @ mazubapp@gmail.com :)
